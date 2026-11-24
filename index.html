@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Monitor Control</title>
+<meta name="description" content="One window for my three Alienware monitors: brightness, contrast, game modes and inputs over DDC/CI, NVIDIA-style gamma and vibrance on an AMD card, and saved setups.">
+<link rel="icon" href="icon.png">
+<style>
+  :root {
+    --bg: #004225; --card: #0C5234; --text: #E8F0EA; --h1: #FFFFFF; --muted: #9DBFA8;
+    --heading: #F3E3B0; --gold: #C8A951; --link: #E6C976; --line: #2F6B50; --warn: #F2B84B; --deep: #063a21;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 "Segoe UI", system-ui, -apple-system, sans-serif; }
+  a { color: var(--link); text-underline-offset: 2px; }
+  a:hover { color: var(--heading); }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 16px; }
+  header { padding: 48px 0 28px; }
+  .brand { display: flex; align-items: center; gap: 16px; }
+  .brand img { width: 64px; height: 64px; flex: none; }
+  h1 { color: var(--h1); font-size: clamp(2rem, 7vw, 3rem); line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
+  .tag { color: var(--muted); font-size: 1.15rem; margin: 14px 0 0; max-width: 46rem; }
+  h2 { color: var(--heading); font-size: 1.4rem; line-height: 1.3; margin: 52px 0 18px; padding-bottom: 8px; border-bottom: 2px solid var(--gold); }
+  p { margin: 0 0 14px; }
+  .shot { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+  .card h3 { color: var(--h1); font-size: 1.05rem; margin: 0 0 6px; }
+  .card p { color: var(--muted); margin: 0; }
+  .pill { display: inline-block; font-size: 0.78rem; color: var(--gold); border: 1px solid var(--gold); border-radius: 999px; padding: 0 9px; margin-bottom: 8px; }
+  table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); overflow-wrap: break-word; }
+  th { color: var(--heading); font-weight: 600; }
+  tr:last-child td, tr:last-child th { border-bottom: none; }
+  code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 0.92em; background: var(--deep); border-radius: 4px; padding: 1px 5px; }
+  .note { color: var(--muted); }
+  ul { padding-left: 1.25em; margin: 0 0 14px; }
+  li { margin: 6px 0; }
+  .warn { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--warn); border-radius: 8px; padding: 12px 16px; margin: 16px 0; }
+  .warn strong { color: var(--warn); }
+  footer { color: var(--muted); font-size: 0.92rem; border-top: 1px solid var(--line); margin-top: 56px; padding: 28px 0 40px; }
+  footer p { margin: 0 0 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <img src="icon.png" alt="" width="64" height="64">
+      <h1>Monitor Control</h1>
+    </div>
+    <p class="tag">One window for my three monitors: brightness, contrast, game modes and inputs, NVIDIA-style gamma and
+      vibrance on an AMD graphics card, and saved setups for gaming, night and movies.</p>
+  </header>
+
+  <img class="shot" src="screenshot.png" alt="Monitor Control: a Saved setups bar on top, three screen cards with brightness, contrast, gamma, vibrance, mode and input, and an All screens panel with presets" width="954" height="813">
+
+  <h2>What it is</h2>
+  <p>I wanted to dim my screens and switch inputs without reaching for the monitor buttons. I also wanted the gamma
+    and vibrance settings NVIDIA cards have, on my AMD card, so I could see into the shadows in Rust and Tarkov. So
+    I built one window for all of it.</p>
+  <p>It's made for my desk: three Alienware monitors (an AW2720HF and two AW2518HF) and an AMD Radeon RX 9070 XT.
+    That's the only hardware it has been tested on.</p>
+
+  <h2>What it does</h2>
+  <div class="grid">
+    <div class="card"><span class="pill">Monitor</span><h3>Brightness and contrast</h3><p>Talks to each monitor over DDC/CI: the same settings as its own menu buttons, per screen or all at once.</p></div>
+    <div class="card"><span class="pill">Monitor</span><h3>Game modes</h3><p>Standard, FPS, MOBA/RTS, RPG, SPORTS, Game 1 to 3 and ComfortView, as each of my Alienware screens reports them.</p></div>
+    <div class="card"><span class="pill">Monitor</span><h3>Input switching</h3><p>Switch a screen between DisplayPort and HDMI, for example to a console. It asks first, since your PC picture leaves that screen.</p></div>
+    <div class="card"><span class="pill">Graphics card</span><h3>Gamma</h3><p>Lifts dark areas so you can see into shadows, without washing out bright parts. Per screen, from 0.5 to 3.0.</p></div>
+    <div class="card"><span class="pill">Graphics card</span><h3>Vibrance and color</h3><p>NVIDIA-style digital vibrance on an AMD card (the driver's saturation), plus the card's own brightness and contrast.</p></div>
+    <div class="card"><span class="pill">Setups</span><h3>Saved setups</h3><p>Save every screen's settings under a name and load them back. One setup can be applied each time you sign in to Windows.</p></div>
+    <div class="card"><span class="pill">Anywhere</span><h3>Command line</h3><p>Brightness, contrast, modes, inputs, gamma, vibrance, color reset and saved setups also work from a shortcut or a script.</p></div>
+  </div>
+
+  <h2>Saved setups it comes with</h2>
+  <table>
+    <tr><th>Setup</th><th>What it sets on every screen</th></tr>
+    <tr><td>Tarkov / Rust</td><td>FPS mode, brightness 75, gamma 1.5, vibrance 65%</td></tr>
+    <tr><td>Night</td><td>ComfortView, brightness 20, gamma 1.0, vibrance 50%</td></tr>
+    <tr><td>Movies / TV</td><td>Standard, brightness 55, gamma 1.0, vibrance 55%</td></tr>
+  </table>
+  <p class="note" style="margin-top:12px">All three keep contrast at 75. Gamma 1.0 and 50% vibrance are normal. A setup
+    never changes which input a screen is on. These were made on my screens, so save your own on yours.</p>
+
+  <h2>Command line</h2>
+  <table>
+    <tr><th>Command</th><th>What it does</th></tr>
+    <tr><td><code>MonitorControl.exe list</code></td><td>Every screen and its current values</td></tr>
+    <tr><td><code>MonitorControl.exe brightness 40 left</code></td><td>Brightness 0 to 100. Leave out the screen for all of them.</td></tr>
+    <tr><td><code>MonitorControl.exe contrast 75</code></td><td>Contrast 0 to 100</td></tr>
+    <tr><td><code>MonitorControl.exe mode fps right</code></td><td>A picture mode (Dell and Alienware)</td></tr>
+    <tr><td><code>MonitorControl.exe input hdmi1 middle</code></td><td>Switch one screen's input. This one doesn't ask first.</td></tr>
+    <tr><td><code>MonitorControl.exe preset night</code></td><td>Day 75, Evening 45 or Night 20 brightness on every screen</td></tr>
+    <tr><td><code>MonitorControl.exe gamma 1.5</code></td><td>Gamma 0.5 to 3.0, or <code>normal</code></td></tr>
+    <tr><td><code>MonitorControl.exe vibrance 70</code></td><td>Vibrance 0 to 100%, or <code>normal</code> (AMD)</td></tr>
+    <tr><td><code>MonitorControl.exe color reset</code></td><td>Graphics card color back to normal</td></tr>
+    <tr><td><code>MonitorControl.exe setup "Tarkov / Rust"</code></td><td>Apply a saved setup (<code>setup list</code> shows them)</td></tr>
+  </table>
+  <p class="note" style="margin-top:12px">A screen is <code>left</code>, <code>middle</code>, <code>right</code> or a model
+    name. Exit code 0 means everything worked, 1 that something failed, 2 a bad command. The graphics card's
+    brightness and contrast, and saving, deleting and Use at sign-in, are only in the window.</p>
+
+  <h2>Use it with your monitor</h2>
+  <p>I've only tested it on my own three monitors and AMD card. The rest of this comes from vendor docs, Microsoft's
+    docs and other people's reports, not from my testing.</p>
+  <ul>
+    <li><strong>Brightness and contrast</strong> use standard codes, so they work on most monitors once DDC/CI is
+      turned on in the monitor's menu. Docks, converters, KVM switches and daisy chains can block it, and laptop
+      screens and most TVs don't have it at all.</li>
+    <li><strong>Inputs</strong> use the standard values (DisplayPort, HDMI 1, HDMI 2), but brands bend them. Many
+      recent LG monitors switch inputs through a separate channel that Windows' DDC/CI calls can't reach, Samsung
+      often uses its own values, and USB-C has no standard value at all.</li>
+    <li><strong>The mode list is mapped for Dell and Alienware only.</strong> Other brands use those codes for other
+      things, so leave it alone until the monitor has been mapped.</li>
+    <li><strong>Some monitors only listen on the input they're showing.</strong> Once you switch one away from the PC,
+      the PC can't switch it back. The monitor's own button always can.</li>
+    <li><strong>Gamma</strong> is a plain Windows call, so it should work on most graphics cards. <strong>The card
+      brightness, contrast and vibrance sliders need an AMD card;</strong> on NVIDIA or Intel they show n/a.</li>
+  </ul>
+
+  <h2>Good to know</h2>
+  <ul>
+    <li>Switching an input asks first. Switching away and back from the app hasn't been tested on my monitors yet, so
+      keep the monitor's input button in mind.</li>
+    <li>Gamma is a Windows display setting and doesn't touch the game. Windows resets it after a restart, sleep or a
+      resolution change, and some games reset it in exclusive fullscreen, so play in borderless windowed. Load your
+      setup again when that happens.</li>
+    <li><strong>Use at sign-in</strong> puts a setup back when you sign in to Windows. It doesn't run after sleep or a
+      resolution change.</li>
+    <li>The FPS, MOBA/RTS and RPG names come from the order in Dell's manual, so check the monitor's menu if one looks
+      wrong. Warm, Cool and Custom Color can only be picked on the monitor itself.</li>
+  </ul>
+  <div class="warn"><strong>Careful:</strong> on a monitor from another brand, don't use the mode list until it's
+    mapped. The same codes can mean something else there.</div>
+
+  <footer>
+    <p>Made by DeanVenture09 for my own three-monitor desk. The source code is private.</p>
+    <p>Not affiliated with Dell, Alienware, AMD or NVIDIA.</p>
+    <p>Built with help from Claude Code.</p>
+  </footer>
+</div>
+</body>
+</html>
