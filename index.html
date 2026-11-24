@@ -3,34 +3,64 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="light dark">
 <title>Monitor Control</title>
 <meta name="description" content="One window for my three Alienware monitors: brightness, contrast, game modes and inputs over DDC/CI, NVIDIA-style gamma and vibrance on an AMD card, and saved setups.">
 <link rel="icon" href="icon.png">
+<script>
+  // Light or dark: the visitor's system setting, unless they picked one with the button (saved in this browser).
+  try { var t = localStorage.getItem("monitor-control-theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+</script>
 <style>
   :root {
-    --bg: #004225; --card: #0C5234; --text: #E8F0EA; --h1: #FFFFFF; --muted: #9DBFA8;
-    --heading: #F3E3B0; --gold: #C8A951; --link: #E6C976; --line: #2F6B50; --warn: #F2B84B; --deep: #063a21;
+    color-scheme: light;
+    --bg: #FFFFFF; --card: #F5F7F9; --text: #1F2328; --h1: #0D1117; --muted: #57606A;
+    --heading: #0D1117; --accent: #0969DA; --link: #0758B8; --link-hover: #033D8B; --line: #D8DEE4; --warn: #9A5B00;
+    --deep: #ECEFF3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #121417; --card: #1B1F23; --text: #E3E6EA; --h1: #FFFFFF; --muted: #A3ABB5;
+      --heading: #FFFFFF; --accent: #4C9AFF; --link: #6CB6FF; --link-hover: #A5D2FF; --line: #30363D; --warn: #F2B84B;
+      --deep: #262B31;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #121417; --card: #1B1F23; --text: #E3E6EA; --h1: #FFFFFF; --muted: #A3ABB5;
+    --heading: #FFFFFF; --accent: #4C9AFF; --link: #6CB6FF; --link-hover: #A5D2FF; --line: #30363D; --warn: #F2B84B;
+    --deep: #262B31;
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 "Segoe UI", system-ui, -apple-system, sans-serif; }
   a { color: var(--link); text-underline-offset: 2px; }
-  a:hover { color: var(--heading); }
-  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 16px; }
-  header { padding: 48px 0 28px; }
+  a:hover { color: var(--link-hover); }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 16px; position: relative; }
+  .theme-toggle { position: absolute; top: 14px; right: 16px; display: inline-flex; align-items: center; gap: 7px;
+    font: 600 0.9rem/1 "Segoe UI", system-ui, -apple-system, sans-serif; color: var(--text); background: var(--card);
+    border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+  .theme-toggle[hidden] { display: none; }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .theme-toggle svg { width: 16px; height: 16px; flex: none; }
+  .theme-toggle .sun { display: none; }
+  :root[data-dark] .theme-toggle .sun { display: block; }
+  :root[data-dark] .theme-toggle .moon { display: none; }
+  header { padding: 64px 0 28px; }
   .brand { display: flex; align-items: center; gap: 16px; }
   .brand img { width: 64px; height: 64px; flex: none; }
   h1 { color: var(--h1); font-size: clamp(2rem, 7vw, 3rem); line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
   .tag { color: var(--muted); font-size: 1.15rem; margin: 14px 0 0; max-width: 46rem; }
-  h2 { color: var(--heading); font-size: 1.4rem; line-height: 1.3; margin: 52px 0 18px; padding-bottom: 8px; border-bottom: 2px solid var(--gold); }
+  h2 { color: var(--heading); font-size: 1.4rem; line-height: 1.3; margin: 52px 0 18px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
   p { margin: 0 0 14px; }
   .shot { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
   .card h3 { color: var(--h1); font-size: 1.05rem; margin: 0 0 6px; }
   .card p { color: var(--muted); margin: 0; }
-  .pill { display: inline-block; font-size: 0.78rem; color: var(--gold); border: 1px solid var(--gold); border-radius: 999px; padding: 0 9px; margin-bottom: 8px; }
+  .pill { display: inline-block; font-size: 0.78rem; color: var(--link); border: 1px solid var(--accent); border-radius: 999px; padding: 0 9px; margin-bottom: 8px; }
   table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; }
   th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); overflow-wrap: break-word; }
   th { color: var(--heading); font-weight: 600; }
@@ -47,6 +77,11 @@
 </head>
 <body>
 <div class="wrap">
+  <button class="theme-toggle" id="theme-toggle" type="button" hidden>
+    <svg class="moon" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M6.2 1.1a6.9 6.9 0 1 0 8.7 8.7A5.6 5.6 0 0 1 6.2 1.1Z"/></svg>
+    <svg class="sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.2" fill="currentColor"/><path stroke="currentColor" stroke-width="1.6" stroke-linecap="round" d="M8 .9v1.8M8 13.3v1.8M.9 8h1.8M13.3 8h1.8M3 3l1.3 1.3M11.7 11.7 13 13M3 13l1.3-1.3M11.7 4.3 13 3"/></svg>
+    <span>Dark</span>
+  </button>
   <header>
     <div class="brand">
       <img src="icon.png" alt="" width="64" height="64">
@@ -143,5 +178,33 @@
     <p>Built with help from Claude Code.</p>
   </footer>
 </div>
+<script>
+  // The button shows the mode it switches to. A choice made here is kept in this browser (if it allows storage);
+  // without one, the page follows the system's light or dark setting, also when that changes.
+  (function () {
+    var key = "monitor-control-theme", root = document.documentElement, btn = document.getElementById("theme-toggle");
+    var media = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+    function isDark() { var t = root.getAttribute("data-theme"); return t ? t === "dark" : !!(media && media.matches); }
+    function show() {
+      var dark = isDark();
+      if (dark) root.setAttribute("data-dark", ""); else root.removeAttribute("data-dark");
+      btn.querySelector("span").textContent = dark ? "Light" : "Dark";
+      btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+      btn.title = btn.getAttribute("aria-label");
+    }
+    btn.addEventListener("click", function () {
+      var next = isDark() ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem(key, next); } catch (e) {}
+      show();
+    });
+    if (media) {
+      if (media.addEventListener) media.addEventListener("change", show);
+      else if (media.addListener) media.addListener(show);
+    }
+    btn.hidden = false;
+    show();
+  })();
+</script>
 </body>
 </html>
